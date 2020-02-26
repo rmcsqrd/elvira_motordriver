@@ -13,6 +13,7 @@ void PWMGen(uint8_t driverAddress, uint8_t motorID, uint8_t positionDeg);
 
 class Leg
 {
+ // class for individual leg related functionality
     public:
     uint8_t shoulderJoint;
     uint8_t topJoint;
@@ -23,7 +24,6 @@ class Leg
     void straighten(); 
     void articulate(uint8_t, uint8_t);
 
-
 };
 
 class PCA9685
@@ -33,7 +33,24 @@ class PCA9685
     void driverWrite(uint8_t driverAddress, uint8_t regID, uint8_t value);    
 };
 
+class Body
+{
+// class for overall body movement (mostly controls joint articulation, not sweep)
 
-
-
+    public:
+    uint8_t leg1Top;
+    uint8_t leg1Bottom;
+    uint8_t leg2Top;
+    uint8_t leg2Bottom;
+    uint8_t leg3Top;
+    uint8_t leg3Bottom;
+    uint8_t leg4Top;
+    uint8_t leg4Bottom;
+    uint8_t driverAddress;
+    Body();
+    void Yaw(uint16_t degrees);
+    void Pitch(int8_t degrees);
+    void Roll(int8_t degrees);
+    uint8_t degreeConvert(int8_t degrees);
+};
 #endif

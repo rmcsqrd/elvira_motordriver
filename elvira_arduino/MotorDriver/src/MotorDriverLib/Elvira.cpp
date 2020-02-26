@@ -73,9 +73,10 @@ void Leg::straighten(){
 
 void Leg::articulate(uint8_t topdeg, uint8_t botdeg){
     PWMGen(driverAddress, topJoint, topdeg);
-    PWMGen(driverAddress, botdeg, deg);
+    PWMGen(driverAddress, bottomJoint, botdeg);
 }
 
+    
 PCA9685::PCA9685(uint8_t address)
 {
     uint8_t driverAddress = address;
@@ -96,3 +97,56 @@ void PCA9685::driverWrite(uint8_t driverAddress, uint8_t regID, uint8_t value){
     myWire.write(value);
     myWire.endTransmission();
 }
+
+Body::Body()
+{
+    leg1Top = 2;
+    leg1Bottom = 1;
+    leg2Top = 8;
+    leg2Bottom = 7;
+    leg3Top = 5;
+    leg3Bottom = 4;
+    leg4Top = 11;
+    leg4Bottom = 10;
+    driverAddress = 0x40;
+}
+
+uint8_t Body::degreeConvert(int8_t degrees){
+   uint8_t unsigned_degrees = degrees*90 + 90; // technically degrees is a bit of a misnomer but I don't want to refactor 
+   return unsigned_degrees;
+}
+
+void Body::Roll(int8_t degrees){
+    uint8_t us_degrees = degreeConvert(degrees); // convert so plays nice with PWMGen but also intuitive
+    PWMGen(driverAddress, leg1Top, us_degrees);
+    PWMGen(driverAddress, leg1Bottom, us_degrees);
+
+    PWMGen(driverAddress, leg2Top, 180-us_degrees);
+    PWMGen(driverAddress, leg2Bottom, 180-us_degrees);
+    
+    PWMGen(driverAddress, leg3Top, us_degrees);
+    PWMGen(driverAddress, leg3Bottom, us_degrees);
+
+    PWMGen(driverAddress, leg4Top, 180-us_degrees);
+    PWMGen(driverAddress, leg4Bottom, 180-us_degrees);
+}
+
+void Body::Pitch(int8_t degrees){
+    uint8_t us_degrees = degreeConvert(degrees);
+    PWMGen(driverAddress, leg1Top, us_degrees);
+    PWMGen(driverAddress, leg1Bottom, us_degrees);
+    
+    PWMGen(driverAddress, leg2Top, us_degrees);
+    PWMGen(driverAddress, leg2Bottom, us_degrees);
+    
+    PWMGen(driverAddress, leg3Top, 180-us_degrees);
+    PWMGen(driverAddress, leg3Bottom, 180-us_degrees);
+    
+    PWMGen(driverAddress, leg4Top, 180-us_degrees);
+    PWMGen(driverAddress, leg4Bottom, 180-us_degrees);
+}
+
+
+
+
+
