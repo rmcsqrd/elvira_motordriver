@@ -70,6 +70,12 @@ void Leg::straighten(){
     PWMGen(driverAddress, topJoint, 90);
     PWMGen(driverAddress, bottomJoint, 90);
 }
+
+void Leg::articulate(uint8_t topdeg, uint8_t botdeg){
+    PWMGen(driverAddress, topJoint, topdeg);
+    PWMGen(driverAddress, botdeg, deg);
+}
+
 PCA9685::PCA9685(uint8_t address)
 {
     uint8_t driverAddress = address;

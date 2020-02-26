@@ -21,6 +21,7 @@ class Leg
     Leg(uint8_t shoulder, uint8_t top, uint8_t bottom);
     void sweep(uint8_t);  
     void straighten(); 
+    void articulate(uint8_t, uint8_t);
 
 
 };
