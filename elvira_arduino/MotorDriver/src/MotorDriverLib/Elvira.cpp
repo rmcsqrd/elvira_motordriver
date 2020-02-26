@@ -111,27 +111,27 @@ Body::Body()
     driverAddress = 0x40;
 }
 
-uint8_t Body::degreeConvert(int8_t degrees){
+uint8_t Body::degreeConvert(float degrees){
    uint8_t unsigned_degrees = degrees*90 + 90; // technically degrees is a bit of a misnomer but I don't want to refactor 
    return unsigned_degrees;
 }
 
-void Body::Roll(int8_t degrees){
+void Body::pitch(float degrees){
     uint8_t us_degrees = degreeConvert(degrees); // convert so plays nice with PWMGen but also intuitive
-    PWMGen(driverAddress, leg1Top, us_degrees);
-    PWMGen(driverAddress, leg1Bottom, us_degrees);
+    PWMGen(driverAddress, leg1Top, 180-us_degrees);  // legs (1,4) and (2,3) have opposite actuation mechanisms, we send PWM signals accordingly.
+    PWMGen(driverAddress, leg1Bottom, 180-us_degrees);
 
-    PWMGen(driverAddress, leg2Top, 180-us_degrees);
-    PWMGen(driverAddress, leg2Bottom, 180-us_degrees);
+    PWMGen(driverAddress, leg2Top, us_degrees);
+    PWMGen(driverAddress, leg2Bottom, us_degrees);
     
-    PWMGen(driverAddress, leg3Top, us_degrees);
-    PWMGen(driverAddress, leg3Bottom, us_degrees);
+    PWMGen(driverAddress, leg3Top, 180-us_degrees);
+    PWMGen(driverAddress, leg3Bottom, 180-us_degrees);
 
-    PWMGen(driverAddress, leg4Top, 180-us_degrees);
-    PWMGen(driverAddress, leg4Bottom, 180-us_degrees);
+    PWMGen(driverAddress, leg4Top, us_degrees);
+    PWMGen(driverAddress, leg4Bottom, us_degrees);
 }
 
-void Body::Pitch(int8_t degrees){
+void Body::roll(float degrees){
     uint8_t us_degrees = degreeConvert(degrees);
     PWMGen(driverAddress, leg1Top, us_degrees);
     PWMGen(driverAddress, leg1Bottom, us_degrees);

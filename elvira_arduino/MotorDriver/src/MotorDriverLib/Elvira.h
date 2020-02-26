@@ -48,9 +48,9 @@ class Body
     uint8_t leg4Bottom;
     uint8_t driverAddress;
     Body();
-    void Yaw(uint16_t degrees);
-    void Pitch(int8_t degrees);
-    void Roll(int8_t degrees);
-    uint8_t degreeConvert(int8_t degrees);
+    void yaw(uint16_t degrees);
+    void pitch(float degrees);
+    void roll(float degrees);
+    uint8_t degreeConvert(float degrees);
 };
 #endif

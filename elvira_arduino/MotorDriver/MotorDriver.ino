@@ -6,6 +6,7 @@
 #include "Wire.h"
 #include <stdint.h>
 #include "src/MotorDriverLib/Elvira.h"
+#include "math.h"
 
 /*   ASCII Schematic (Plan View, numbers indicate leg #)
  *        1  F   2     z
@@ -34,6 +35,9 @@
  *  4   | 9, 11, 10
  *  
  *  (Top is top of leg actuator, bottom is bottom of leg actuator)
+ *  
+ *  General Notes:
+ *  - 20ms delay is approximate min for servo refresh, any lower causes eratic behavior
  */
 
 // Constructors
@@ -55,131 +59,72 @@ uint16_t delayt = 1000;
 
 // Initialize Routine
 void setup() {
+  uint8_t timestep = 100;
   pinMode(4, OUTPUT);
   digitalWrite(4, HIGH);
   sayHello(2);
-  body.Roll(-1);
+
   delay(delayt);
-  standtall();
+
+
   delay(delayt);
-  body.Roll(1);
+  
+  leg4.articulate(0,0);  // step leg 4, and bring leg 2 to parallel
+  leg1.articulate(0,0);
+  delay(timestep);
+  leg4.sweep(180);
+  leg2.sweep(180);
+  delay(timestep);
+  leg4.articulate(180,180);
+  leg1.articulate(180,180);
   delay(delayt);
-  standtall();
+
+
+  leg2.articulate(180,180);  // step leg 2, drop leg 3 hip
+  leg3.articulate(180,180);
+  delay(timestep);
+  leg2.sweep(0);
+  leg4.sweep(0);
+  delay(timestep);
+  leg2.articulate(0,0);
+  leg3.articulate(0,0);
   delay(delayt);
-  body.Pitch(-1);
+
+  leg3.articulate(180,180);  // step leg 3, and bring leg 1 to parallel
+  leg2.articulate(180,180);
+  delay(timestep);
+  leg3.sweep(00);
+  leg1.sweep(0);
+  delay(timestep);
+  leg3.articulate(0,0);
+  leg2.articulate(0,0);
   delay(delayt);
-  standtall();
+
+  leg1.articulate(180,180);  // step leg 2, drop leg 3 hip
+  leg4.articulate(180,180);
+  delay(timestep);
+  leg1.sweep(0);
+  leg3.sweep(0);
+  delay(timestep);
+  leg1.articulate(0,0);
+  leg4.articulate(0,0);
   delay(delayt);
-  body.Pitch(1);
-  delay(delayt);
-  standtall();
+  
+
+  
+
+
+  
 }
 
 // Main Loop
 void loop() {
-//  prance(3);
-//  leg2.articulate(180,180);
-//  leg1.articulate(90,180);  // 1 up
-//  leg4.articulate(180,0);  // 1 up
-//  leg3.articulate(0,180);  // 3 up
-    
-  
-  
 }
 
 // Auxillary Functions
-void prance(uint8_t n){
-  for(int i =0; i<n;i++){
-    leg3.articulate(0,0);  // 3 up
-    delay(delayt);
-    leg3.articulate(180,180);  // 3 down
-    leg1.articulate(180,180); // 1 up
-    delay(delayt);
-    leg1.articulate(0,0); // 1 down
-    leg2.articulate(0,0); // 2 up
-    delay(delayt);
-    leg2.articulate(180,180); // 2 down
-    leg4.articulate(180,180); // 4 up
-    delay(delayt);
-    leg4.articulate(0,0); // 4 down;
-  }
-}
 
 
-void randomArticulate(uint8_t n){
-  for(int i =0; i<n;i++){
-    leg3.articulate(0,0);  // 3 up
-    delay(delayt);
-    leg3.articulate(180,180);  // 3 down
-    leg1.articulate(0,0); // 1 up
-    delay(delayt);
-    leg1.articulate(180,180); // 1 down
-    leg2.articulate(0,0); // 2 up
-    delay(delayt);
-    leg2.articulate(180,180); // 2 down
-    leg4.articulate(180,180); // 4 up
-    delay(delayt);
-    leg4.articulate(0,0); // 4 down;
-  }
-}
-
-
-
-void forward(uint8_t numSteps){
-  for(uint8_t stepcnt = 0; stepcnt < numSteps; stepcnt++){
-    leg4.articulate(0,0);  // 4 up
-    leg4.sweep(180);
-    leg4.articulate(90,90);  // 4 down
-    
-    delay(delayt);
-
-    leg2.articulate(90,90);  // 2 up
-    leg2.sweep(180);
-    leg2.articulate(0,0);  // 2 up
-
-    delay(delayt);
-
-    leg3.articulate(90,90);  // 3 up
-    leg3.sweep(0);
-    leg3.articulate(0,0);  // 3 down
-
-    delay(delayt);
-
-    leg1.articulate(0,0);  //1 up
-    leg1.sweep(0);
-    leg1.articulate(90,90);  //1 down
-    
-    //_____________
-leg4.articulate(0,0);  // 4 up
-    leg4.sweep(0);
-    leg4.articulate(90,90);  // 4 down
-    
-    delay(delayt);
-
-    leg2.articulate(90,90);  // 2 up
-    leg2.sweep(0);
-    leg2.articulate(0,0);  // 2 up
-
-    delay(delayt);
-
-    leg3.articulate(90,90);  // 3 up
-    leg3.sweep(180);
-    leg3.articulate(0,0);  // 3 down
-
-    delay(delayt);
-
-    leg1.articulate(0,0);  //1 up
-    leg1.sweep(180);
-    leg1.articulate(90,90);  //1 down
-
-    delay(delayt);
-
-  }
-}
-
-
-
-void standtall(){
+void stanceReset(){
   leg1.straighten();
   leg2.straighten();
   leg3.straighten();
@@ -192,6 +137,7 @@ void standtall(){
 }
 
 void sayHello(uint8_t n){
+  stanceReset();
   int pushupTime = 200;
   for(int i =0; i<n;i++){
     leg1.articulate(180,0);
@@ -228,51 +174,4 @@ void getshort(){
   leg2.articulate(180,180);
   leg4.articulate(0,0);
   leg3.articulate(180,180);
-}
-
-void tiltDance(){
-//  getmiddle();
-  getshort();
-  delay(delayt);
-  leg1.articulate(0,0);     // lean forward
-  leg2.articulate(180,180);
-  leg3.articulate(0,0);
-  leg4.articulate(180,180);
-  delay(delayt);  
-  getshort();
-  delay(delayt);
-  leg3.articulate(180,180);     // lean backward
-  leg4.articulate(0,0);
-
-  leg1.articulate(180,180);   
-  leg2.articulate(0,0);
-  delay(delayt);
-  getshort();
-  delay(delayt);
-  leg3.articulate(180,180);     // lean left
-  leg1.articulate(0,0);
-
-  leg2.articulate(0, 0);
-  leg4.articulate(180,180);
-  delay(delayt);
-  getshort();
-  delay(delayt);
-  
-  leg2.articulate(180,180);     // lean right
-  leg4.articulate(0,0);
-
-  leg1.articulate(180,180);
-  leg3.articulate(0,0);
-  delay(delayt);
-  standtall();
-  delay(delayt);
-  getmiddle();
-  delay(delayt);
-  getshort();
-  delay(delayt);
-  getmiddle();
-  delay(delayt);
-  standtall();
-  delay(delayt);
-
 }
